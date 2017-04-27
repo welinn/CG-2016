@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+#info {
+  position: absolute;
+  top: 2%;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  color: #ffff00
+}
+body {
+  overflow: hidden;
+}
+
+
+</style>
+</head>
+
+<body>
+<div id="info">HW2</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r76/three.min.js"></script>
+<script src="./files/OrbitControls.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.js"></script>
+<script>
+var scene, renderer, camera;
+var controls;
+var gcontrols;   //控制介面
+var leftArm, rightArm, head, leftLeg, rightLeg, body, all;
+var skirt, skirt2, skirt3, skirt4;
+var rad = Math.PI, angle = 0;
+
+init();
+animate();
+
+function init() {
+  scene = new THREE.Scene();
+  renderer = new THREE.WebGLRenderer();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x888888);
+  document.body.appendChild(renderer.domElement);
+
+  camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 1000);
+  camera.position.set(0, 100, 350);
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  ///////////////////////////////貼材質///////////////////////////////
+  ///////////////////////////////////////////////////////////////////
+
+  THREE.ImageUtils.crossOrigin = '';
+  var materialArray = [];
+  //右左上下前後
+  materialArray.push(new THREE.MeshLambertMaterial({
+side: THREE.DoubleSide,
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/q7L3f4d.png')
+}));
+materialArray.push(new THREE.MeshLambertMaterial({
+side: THREE.DoubleSide,
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/OSEbTrD.png')
+}));
+materialArray.push(new THREE.MeshLambertMaterial({
+side: THREE.DoubleSide,
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/zCpS4Hu.png')
+}));
+materialArray.push(new THREE.MeshLambertMaterial({
+visible: false
+}));
+materialArray.push(new THREE.MeshLambertMaterial({
+side: THREE.DoubleSide,
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/wZCPkNO.png')
+}));
+materialArray.push(new THREE.MeshLambertMaterial({
+side: THREE.DoubleSide,
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/lky5aIk.png')
+}));
+
+
+var tmp = new THREE.MeshLambertMaterial({
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/2vZF7ok.png')
+});
+//右左上下前後
+var materialArray2 = [tmp, tmp, tmp, tmp, new THREE.MeshLambertMaterial({
+map: THREE.ImageUtils.loadTexture('http://i.imgur.com/Fkkfjoi.png')
+}), tmp];
+
+//右左上下前後
+var materialArray3 = [tmp, tmp, tmp, tmp, tmp, tmp];
+
+var headMate = new THREE.MeshFaceMaterial(materialArray);
+var bodyMate = new THREE.MeshFaceMaterial(materialArray2);
+var material = new THREE.MeshFaceMaterial(materialArray3);
+
+/////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////
+
+leftLeg = new THREE.Object3D();
+rightLeg = new THREE.Object3D();
+leftArm = new THREE.Object3D();
+rightArm = new THREE.Object3D();
+head = new THREE.Object3D();
+all = new THREE.Object3D();
+skirt = new THREE.Object3D();
+skirt2 = new THREE.Object3D();
+skirt3 = new THREE.Object3D();
+skirt4 = new THREE.Object3D();
+body = new THREE.Object3D();
+
+all.position.set(0, 23, 0);
+body.position.set(0, -8, 0);
+leftLeg.position.set(-3, -9, 0);
+rightLeg.position.set(3, -9, 0);
+head.position.set(0, 15.5, 0);
+leftArm.position.set(-8, 13, 0);
+rightArm.position.set(8, 13, 0);
+skirt.position.set(0, 0, 4);
+skirt2.position.set(0, 0, -4);
+skirt3.position.set(6, 0, 0);
+skirt4.position.set(-6, 0, 0);
+
+var materialC = new THREE.MeshLambertMaterial({color : 0xd2b48c});
+
+///////////////////////////腳///////////////////////////
+var mesh = new THREE.Mesh(new THREE.BoxGeometry(5, 13, 8), material);
+mesh.position.set(0, -7.5, 0);
+var mesh2 = mesh.clone();
+
+var cy = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 0.3, 32), materialC);
+cy.rotation.z = rad/2;
+var cy2 = cy.clone();
+
+leftLeg.add(mesh);
+leftLeg.add(cy);
+rightLeg.add(mesh2);
+rightLeg.add(cy2);
+/////////////////////////////頭///////////////////////////
+mesh =  new THREE.Mesh(new THREE.BoxGeometry(24, 14.5, 14), headMate);
+mesh.position.set(0, 8, 0);
+head.add(mesh);
+/////////////////////////////手///////////////////////////
+mesh = new THREE.Mesh(new THREE.BoxGeometry(4, 16, 4), material);
+mesh.position.set(0, -8, 0);
+cy = new THREE.Mesh(new THREE.CylinderGeometry(2, 2, 4, 32), materialC);
+cy.rotation.x = rad/2;
+mesh2 = mesh.clone();
+cy2 = cy.clone();
+
+leftArm.add(mesh);
+leftArm.add(cy);
+rightArm.add(mesh2);
+rightArm.add(cy2);
+/////////////////////////////身體///////////////////////////
+mesh = new THREE.Mesh(new THREE.BoxGeometry(12, 16, 8), bodyMate);
+mesh.position.set(0, 8, 0);
+body.add(mesh);
+
+mesh = new THREE.Mesh(new THREE.BoxGeometry(12, 6, 0.1), material);
+mesh2 = mesh.clone();
+mesh.position.set(0, -3, 0);
+mesh2.position.set(0, -3, 0);
+skirt.add(mesh);
+skirt2.add(mesh2);
+skirt.rotation.x = -0.2;
+skirt2.rotation.x = 0.2;
+body.add(skirt);
+body.add(skirt2);
+mesh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 6, 8), material);
+mesh2 = mesh.clone();
+mesh.position.set(0, -3, 0);
+skirt3.add(mesh);
+skirt3.rotation.z = 0.3;
+mesh2.position.set(0, -3, 0);
+skirt4.add(mesh2);
+skirt4.rotation.z = -0.3;
+body.add(skirt3);
+body.add(skirt4);
+
+all.add(leftLeg);
+all.add(rightLeg);
+body.add(head);
+body.add(leftArm);
+body.add(rightArm);
+all.add(body);
+scene.add(all);
+
+var gridXZ = new THREE.GridHelper(100, 10);
+gridXZ.setColors(new THREE.Color(0xff0000), new THREE.Color(0xffffff));
+scene.add(gridXZ);
+
+window.addEventListener('resize', onWindowResize, false);
+
+gcontrols = {
+headUD:0,
+       headLR:0,
+       headLtRt:0,
+       all:0,
+       body:0,
+       armLLR:-0.1,   //左手左右擺
+       armLFB:0,   //左手前後擺
+       armRLR:0.1,
+       armRFB:0,
+       legLLR:0,
+       legLFB:0,
+       legRLR:0,
+       legRFB:0,
+       pose1:function(){
+         this.headUD = 0.0384;
+         this.headLR = -0.1393;
+         this.headLtRt = 0;
+         this.all = 0;
+         this.body = 0;
+         this.armLLR = -0.7855;
+         this.armLFB = 1.5708;
+         this.armRLR = 1.0405;
+         this.armRFB = 1.5708;
+         this.legLLR = -0.5;
+         this.legLFB = 0.1503;
+         this.legRLR = 0.1951;
+         this.legRFB = 0.5;
+       },
+pose2:function(){
+        this.headUD = 0;
+        this.headLR = 0;
+        this.headLtRt = 0;
+        this.all = -0.6661;
+        this.body = 0;
+        this.armLLR = -1.0096;
+        this.armLFB = -1.5708;
+        this.armRLR = 0.6702;
+        this.armRFB = -1.0488;
+        this.legLLR = 0;
+        this.legLFB = -0.5;
+        this.legRLR = 0;
+        this.legRFB = 0.1978;
+      },
+pose3:function(){
+        this.headUD = 0;
+        this.headLR = -0.2;
+        this.headLtRt = 0;
+        this.all = 0;
+        this.body = 0;
+        this.armLLR = -0.4877;
+        this.armLFB = -1.885;
+        this.armRLR = 0.7517;
+        this.armRFB = 0;
+        this.legLLR = 0;
+        this.legLFB = 0;
+        this.legRLR = 0.5;
+        this.legRFB = 0;
+      }
+};
+
+var gui = new dat.GUI();
+gui.remember(gcontrols);
+gui.domElement.id = 'gui';
+
+var f1 = gui.addFolder("head");
+f1.add(gcontrols, 'headUD', -0.2, 0.2);
+f1.add(gcontrols, 'headLR', -0.2, 0.2);
+f1.add(gcontrols, 'headLtRt', -1*rad/3, rad/3);
+var f4 = gui.addFolder("body");
+f4.add(gcontrols, 'all', -1*rad/2, rad/2);
+f4.add(gcontrols, 'body', -1*rad/4, rad/4);
+var f2 = gui.addFolder("arm");
+f2.add(gcontrols, 'armLLR', -1*rad/2 - 0.1, -0.1);
+f2.add(gcontrols, 'armLFB', -1*3*rad/5, 3*rad/5);
+f2.add(gcontrols, 'armRLR', 0.1, rad/2);
+f2.add(gcontrols, 'armRFB', -1*3*rad/5, 3*rad/5);
+var f3 = gui.addFolder("leg");
+f3.add(gcontrols, 'legLLR', -0.5, 0);
+f3.add(gcontrols, 'legLFB', -0.5, 0.5);
+f3.add(gcontrols, 'legRLR', 0, 0.5);
+f3.add(gcontrols, 'legRFB', -0.5, 0.5);
+gui.add(gcontrols, 'pose1');
+gui.add(gcontrols, 'pose2');
+gui.add(gcontrols, 'pose3');
+
+var light = new THREE.HemisphereLight( 0xffffff, 0x000000, 1 );
+light.position.set(10, 70, 200);
+scene.add( light );
+
+var lightB = new THREE.HemisphereLight( 0xffffff, 0x000000, 1 );
+lightB.position.set(100, 50, -200);
+scene.add( lightB );
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+
+  controls.update();
+
+  head.rotation.x = gcontrols.headUD;
+  head.rotation.z = gcontrols.headLR;
+  head.rotation.y = gcontrols.headLtRt;
+
+  leftLeg.rotation.z = gcontrols.legLLR;
+  rightLeg.rotation.z = gcontrols.legRLR;
+  leftLeg.rotation.x = gcontrols.legLFB;
+  rightLeg.rotation.x = gcontrols.legRFB;
+
+  leftArm.rotation.z = gcontrols.armLLR;
+  leftArm.rotation.x = gcontrols.armLFB;
+  rightArm.rotation.z = gcontrols.armRLR;
+  rightArm.rotation.x = gcontrols.armRFB;
+
+  all.rotation.x = gcontrols.all;
+  body.rotation.z = gcontrols.body;
+
+  if(gcontrols.legLFB < -0.2 || gcontrols.legRFB < -0.2)
+    skirt.rotation.x = gcontrols.legLFB < gcontrols.legRFB ?
+      gcontrols.legLFB + gcontrols.legLFB*0.2 : gcontrols.legRFB + gcontrols.legRFB*0.2;
+  else skirt.rotation.x = -0.2;
+  if(gcontrols.legLFB > 0.2 || gcontrols.legRFB > 0.2)
+    skirt2.rotation.x = gcontrols.legLFB > gcontrols.legRFB ?
+      gcontrols.legLFB + gcontrols.legLFB*0.2 : gcontrols.legRFB + gcontrols.legRFB*0.2;
+  else skirt2.rotation.x = 0.2;
+
+  if(gcontrols.legLLR < -0.4)
+    skirt4.rotation.z = gcontrols.legLLR;
+  else skirt4.rotation.z = -0.3;
+
+  if(gcontrols.legRLR > 0.4)
+    skirt3.rotation.z = gcontrols.legRLR;
+  else skirt3.rotation.z = 0.3;
+
+  //  console.log(gcontrols);
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+</script>
+
+
+</body>
+
+</html>

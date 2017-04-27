@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+#info {
+  top: 5%;
+  position: absolute;
+  color: yellow;
+  text-align: center;
+  width: 100%;
+}
+
+body {
+  overflow: hidden
+}
+
+</style>
+</head>
+
+
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r76/three.min.js"></script>
+<script src="./files/OrbitControls.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<div id='info'>
+  HW4 <a href='https://clara.io/view/189608c1-f5db-4693-be94-ef93935041b1#'>model</a>
+</div>
+
+<script>
+var scene, renderer, camera, controls;
+var box;
+var model = new THREE.Object3D();
+var angle = 0;
+
+init();
+animate();
+
+function init() {
+  var width = window.innerWidth;
+  var height = window.innerHeight;
+
+  renderer = new THREE.WebGLRenderer({
+antialias: true
+});
+renderer.setSize(width, height);
+renderer.setClearColor(0x888888);
+document.body.appendChild(renderer.domElement);
+
+scene = new THREE.Scene();
+
+camera = new THREE.PerspectiveCamera(45, width / height, 1, 10000);
+camera.position.y = 150;
+camera.position.z = 350;
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+var gridXZ = new THREE.GridHelper(100, 10);
+gridXZ.setColors(new THREE.Color(0xff0000), new THREE.Color(0xffffff));
+scene.add(gridXZ);
+
+var pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(0, 100, 100);
+scene.add(pointLight);
+var pointLight2 = new THREE.PointLight(0xffffff);
+pointLight2.position.set(100, 100, -100);
+scene.add(pointLight2);
+
+var ambientLight = new THREE.AmbientLight(0x111111);
+scene.add(ambientLight);
+
+////////////////////////////////////////////////////////////////////
+// load the clara.io toytrain
+
+$.getJSON('files/models/hw4/001.json', function(data) {
+    //data is the JSON string
+    var loader = new THREE.ObjectLoader();
+    // assuming we loaded a JSON structure from elsewhere
+    var object = loader.parse(data);
+    object.scale.set(3, 3, 3);
+    object.position.set(100, 50, 0);
+    model.add(object);
+});
+scene.add(model);
+
+$.getJSON('files/models/hw4/coconut-tree.json', function(data) {
+    //data is the JSON string
+    var loader = new THREE.ObjectLoader();
+    // assuming we loaded a JSON structure from elsewhere
+    var object = loader.parse(data);
+    object.scale.set(0.1, 0.1, 0.1);
+    object.position.set(50, 0, 0);
+    scene.add(object);
+});
+
+//////////////////////////////////////////////////////////////
+THREE.ImageUtils.crossOrigin = '';
+var tmp = new THREE.MeshLambertMaterial();
+var materialArray = [tmp, tmp, tmp, tmp, new THREE.MeshLambertMaterial({
+map: THREE.ImageUtils.loadTexture('files/images/00.jpg')
+}), tmp];
+var material = new THREE.MeshFaceMaterial(materialArray);
+
+box = new THREE.Mesh(
+    new THREE.BoxGeometry(30, 30, 30), material);
+box.position.y = 70;
+box.rotation.x = box.rotation.z = -Math.PI/4;
+scene.add(box);
+
+}
+
+function animate() {
+  controls.update();
+  angle += 0.005;
+  model.rotation.y = angle;
+
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
+
+
+</script>
+
+
+</body>
+</html>
+

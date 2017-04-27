@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<style>
+body {
+    background-color: #fff;
+    color: #111;
+    margin: 0px;
+    overflow: hidden;
+    font-family: Monospace;
+    font-size: 12px;
+    position: absolute;
+}
+#info {
+    position: absolute;
+    top: 3%;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+    color: #ffff00
+}
+</style>
+</head>
+
+
+<body>
+<div id="info">HW7
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r76/three.min.js"></script>
+<script src="./files/OrbitControls.js">
+</script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5.1/dat.gui.min.js'></script>
+
+<script id="myVertexShader" type="x-shader/x-vertex">
+	varying vec2 vUv;
+	void main() {
+		gl_Position = projectionMatrix* modelViewMatrix * vec4( position, 1.0);
+		vUv = uv;
+	}
+</script>
+<script id="myFragmentShader" type="x-shader/x-fragment">
+  uniform sampler2D texture;
+  uniform float fade;
+  varying vec2 vUv;
+vec3 rgb2hsv(vec3 c)
+{
+    vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+    vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+
+    float d = q.x - min(q.w, q.y);
+    float e = 1.0e-10;
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+vec3 hsv2rgb(vec3 c)
+{
+    vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+    vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+    return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
+void main() {
+	vec4 color = texture2D (texture, vUv);
+    vec3 hsv = rgb2hsv (color.rgb);
+    hsv.y /= pow(2.,fade); //飽和度
+    vec3 rgb = hsv2rgb (hsv.xyz);
+	gl_FragColor = vec4 (rgb, 1.0);
+}
+</script>
+
+<script>
+var renderer, camera, camera2, controls;
+var scene, sceneRTT, sceneMono, sceneColor;
+var rtTexture;
+var rttmaterial, quad;
+var ball, ballPosition = [], ballSu = 50;
+
+init();
+animate();
+
+function init(){
+
+	rtTexture = new THREE.WebGLRenderTarget(
+		1024,1024,
+		{ minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBFormat }
+		);
+
+	renderer = new THREE.WebGLRenderer({antialias: true});
+	renderer.setSize (window.innerWidth, window.innerHeight);
+	document.body.appendChild (renderer.domElement);
+	renderer.setClearColor (0x888888);
+	renderer.autoClear = false;
+
+	camera = new THREE.PerspectiveCamera (45, window.innerWidth/window.innerHeight, 0.1, 10000);
+	camera.position.y = 0;
+	camera.position.z = 400;
+	camera.lookAt (new THREE.Vector3(0,0,0));
+
+  camera2 = new THREE.OrthographicCamera(window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -10000, 10000);
+
+	// add control here (after the camera is defined)
+	controls = new THREE.OrbitControls (camera, renderer.domElement);
+
+//////////////////////////////////////////////////////////////////////////
+	// render a torus to texture
+	// then apply the texture to a quad,
+  // with a monochrome filter
+
+  sceneRTT = new THREE.Scene();
+  var pointLight = new THREE.PointLight (0xffffff);
+  pointLight.position.set (0,300,200);
+  sceneRTT.add (pointLight);
+  var pointLight2 = new THREE.PointLight (0xffffff);
+  pointLight2.position.set(0, 300, -200);
+  sceneRTT.add (pointLight2);
+////////////////////////////////////////
+  ball = new THREE.Mesh (new THREE.SphereGeometry(2, 32, 32),	new THREE.MeshLambertMaterial({color: Math.random()*16777215}));
+  ball.scale.set(3, 3, 3);
+
+  for(var i = 0; i < ballSu; i++){
+    var ballP = ball.clone();
+    var posi = new THREE.Vector3(Math.random()*400-200, Math.random()*200-20, Math.random()*400-200);
+    if(posi.z < 2 && posi.z > 0) posi.z += 2;
+    else if(posi.z > -2 && posi.z <= 0) posi.z -= 2;
+    ballP.position.copy(posi);
+    ballPosition.push(posi);
+    sceneRTT.add (ballP);
+  }
+
+	scene = new THREE.Scene();
+	rttmaterial = new THREE.ShaderMaterial( {
+		depthWrite: false,
+    uniforms: {
+      texture: {type: "t", value: rtTexture},
+      fade: {type: "f", value : 0.0}},
+		vertexShader: document.getElementById( 'myVertexShader' ).textContent,
+		fragmentShader: document.getElementById( 'myFragmentShader' ).textContent}
+		);
+  rttmaterial.side = THREE.DoubleSide;
+
+  var gui = new dat.GUI();
+  gui.add(rttmaterial.uniforms.fade, 'value', 0, 5).name('fade');
+
+  var plane = new THREE.PlaneGeometry( window.innerWidth, window.innerHeight );
+	quad = new THREE.Mesh (plane, rttmaterial);
+	scene.add (quad);
+
+//////////////////////////////////
+  sceneMono = new THREE.Scene();
+  var pLight = new THREE.PointLight(0xffffff);
+  pLight.position.set(0, 300, 200);
+  sceneMono.add(pLight);
+  var pLight2 = new THREE.PointLight(0xffffff);
+  pLight2.position.set(0, 300, -200);
+  sceneMono.add(pLight2);
+
+/////////////////////////////////////////////
+///////////////////透明球////////////////////
+
+  var blocker = new THREE.Mesh(new THREE.SphereGeometry(2, 32, 32),
+    new THREE.MeshLambertMaterial({
+      color: 0x12ffee,
+      colorWrite: false
+    }));
+  blocker.scale.set(3, 3, 3);
+
+  for(var i = 0; i < ballSu; i ++){
+    var blockerP = blocker.clone();
+    blockerP.position.copy(ballPosition[i]);
+    sceneMono.add(blockerP);
+  }
+
+///////////////////////////////////////////
+	THREE.ImageUtils.crossOrigin = '';
+  var tmp = new THREE.MeshLambertMaterial({
+    transparent: true,
+    visible: false
+  });
+	var materialArray = [tmp, tmp, tmp, tmp, new THREE.MeshLambertMaterial({
+    side: THREE.DoubleSide,
+    transparent: true,
+    map: THREE.ImageUtils.loadTexture('files/images/hw7.png')
+  }), tmp];
+
+  var mat = new THREE.MeshFaceMaterial(materialArray);
+
+  sceneColor = new THREE.Scene();
+  column = new THREE.Mesh(new THREE.BoxGeometry(240, 108, 5), mat);
+  sceneColor.add(pLight);
+  sceneColor.add(pLight2);
+  sceneColor.add(column);
+}
+
+window.onresize = function () {
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
+	renderer.setSize (window.innerWidth, window.innerHeight);
+}
+
+function animate()
+{
+	controls.update();
+
+	requestAnimationFrame ( animate );
+	renderer.clear();
+
+ 	renderer.setClearColor (0xBB5500);//texture背景
+  //renderer.setClearColor (0x007799);
+	renderer.render (sceneRTT, camera, rtTexture, true);
+	// rtTexture has colored torus
+
+	// render texture to screne
+  renderer.setClearColor (0x888888);//背景
+	renderer.render (scene, camera2);//, rtTexture2, true);
+
+  renderer.render(sceneMono, camera);
+  renderer.render(sceneColor, camera);
+
+}
+</script>
+</body>
+</html>
+

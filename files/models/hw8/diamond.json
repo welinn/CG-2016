@@ -1,0 +1,193 @@
+{
+    "textures": [],
+    "object": {
+        "uuid": "32A88B3D-4F37-4EBA-AD09-483E01EFE1CE",
+        "matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        "type": "Scene",
+        "children": [{
+            "name": "Camera1",
+            "uuid": "E2165BD7-4245-3960-8D49-88500343815D",
+            "matrix": [-0.996195,0,0.087156,0,0.043578,0.866025,0.498097,0,-0.075479,0.5,-0.86273,0,-4.471,34.6071,-26.7694,1],
+            "visible": true,
+            "type": "PerspectiveCamera",
+            "far": 50000,
+            "near": 0.1,
+            "aspect": 1.77778,
+            "fov": 38.6274
+        },{
+            "name": "CameraPreset",
+            "uuid": "B0C4E574-DECC-3D97-99F0-60577F3026BF",
+            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,-0.00205,4.73257,-0.104466,1],
+            "visible": true,
+            "type": "Object",
+            "children": [{
+                "name": "OverCamera",
+                "uuid": "3A903D80-5519-371F-BCA1-5F2EB376AEEF",
+                "matrix": [1,0,0,0,0,0.707107,0.707107,0,0,-0.707107,0.707107,0,0,-9.37271,9.37273,1],
+                "visible": true,
+                "type": "PerspectiveCamera",
+                "far": 50000,
+                "near": 0.1,
+                "aspect": 1.77778,
+                "fov": 38.6274
+            }]
+        },{
+            "name": "Cone",
+            "uuid": "02BF8491-5563-3FC5-A223-35058E8B5663",
+            "matrix": [-0.996043,-0.017386,0.087156,0,0.087936,-0.050809,0.994829,0,-0.012868,0.998557,0.052137,0,-0.2661,6.889,0.4655,1],
+            "visible": true,
+            "type": "Mesh",
+            "material": "A0730D92-4E1A-3B9C-8D86-B63D2A9002FA",
+            "castShadow": true,
+            "receiveShadow": true,
+            "geometry": "6F819075-5DAE-3263-8E03-B58B1580326C"
+        },{
+            "name": "Cone1",
+            "uuid": "DB587E3E-D56C-36F7-B43D-9B391022056B",
+            "matrix": [0.99316,0.104384,-0.052336,0,0.057448,-0.046586,0.997261,0,0.10166,-0.993446,-0.052264,0,-0.1141,2.4726,0.2389,1],
+            "visible": true,
+            "type": "Mesh",
+            "material": "A0730D92-4E1A-3B9C-8D86-B63D2A9002FA",
+            "castShadow": true,
+            "receiveShadow": true,
+            "geometry": "F1E8EF2D-6DD7-3144-9E90-9F95164FFC64"
+        },{
+            "name": "LightPreset",
+            "uuid": "1783D250-7BC6-30D0-B7CB-5461D8774CE2",
+            "matrix": [-1,0,0,0,0,0,1,0,0,1,0,0,0,4.07772,-0.068416,1],
+            "visible": true,
+            "type": "Object"
+        },{
+            "name": "SpotLight",
+            "uuid": "1B18A08F-0404-3C2E-888D-7391D0AB1E6E",
+            "matrix": [-1,0,0,0,0,1,-0,0,0,-0,-1,0,0,4.4821,-9.8515,1],
+            "visible": true,
+            "type": "SpotLight",
+            "castShadow": true,
+            "color": 16711680,
+            "intensity": 10.4,
+            "distance": 0,
+            "angle": 2.0944,
+            "decayExponent": 2
+        }]
+    },
+    "animations": [{
+        "fps": 29,
+        "name": "default",
+        "tracks": []
+    }],
+    "geometries": [{
+        "data": {
+            "normals": [0,0,1,0,-0.911313,-0.411664,0.911313,0,-0.411664,0,0.911313,-0.411664,-0.911313,0,-0.411664,0,0,-1],
+            "name": "Cone1Geometry",
+            "skinWeights": [],
+            "uvs": [[0,1,0,0,0.25,0,0.25,1,0.5,0,0.5,1,0.75,0,0.75,1,1,0]],
+            "influencesPerVertex": 2,
+            "bones": [],
+            "vertices": [0,0,2.3,0,-2.2,-2.3,2.2,0,-2.3,0,2.2,-2.3,-2.2,0,-2.3,0,0,-2.3],
+            "metadata": {
+                "generator": "io_three",
+                "uvs": 1,
+                "materials": 1,
+                "morphTargets": 0,
+                "faces": 8,
+                "normals": 6,
+                "bones": 0,
+                "vertices": 6,
+                "version": 3
+            },
+            "animations": [],
+            "morphTargets": [],
+            "faces": [42,0,1,2,0,0,1,2,0,1,2,42,0,2,3,0,3,2,4,0,2,3,42,0,3,4,0,5,4,6,0,3,4,42,0,4,1,0,7,6,8,0,4,1,42,2,1,5,0,2,1,0,2,1,5,42,3,2,5,0,4,2,0,3,2,5,42,4,3,5,0,6,4,0,4,3,5,42,1,4,5,0,8,6,0,1,4,5],
+            "skinIndices": []
+        },
+        "uuid": "F1E8EF2D-6DD7-3144-9E90-9F95164FFC64",
+        "type": "Geometry",
+        "materials": [{
+            "shading": "phong",
+            "colorEmissive": [0,0,0],
+            "opacity": 1,
+            "colorDiffuse": [0.686275,0,0],
+            "wireframe": false,
+            "depthTest": true,
+            "doubleSided": true,
+            "transparent": false,
+            "DbgName": "Car_Paint",
+            "visible": true,
+            "blending": "NormalBlending",
+            "depthWrite": true,
+            "DbgIndex": 0,
+            "colorSpecular": [0.094902,0.09451,0.09451],
+            "specularCoef": 50,
+            "DbgColor": 15658734,
+            "colorAmbient": [0.686275,0,0]
+        }]
+    },{
+        "data": {
+            "normals": [0,0,1,0,-0.917295,-0.398175,0.917295,0,-0.398175,0,0.917295,-0.398175,-0.917295,0,-0.398175,0,0,-1],
+            "name": "ConeGeometry",
+            "skinWeights": [],
+            "uvs": [[0,1,0,0,0.25,0,0.25,1,0.5,0,0.5,1,0.75,0,0.75,1,1,0]],
+            "influencesPerVertex": 2,
+            "bones": [],
+            "vertices": [0,0,2.1,0,-2.2,-2.1,2.2,0,-2.1,0,2.2,-2.1,-2.2,0,-2.1,0,0,-2.1],
+            "metadata": {
+                "generator": "io_three",
+                "uvs": 1,
+                "materials": 1,
+                "morphTargets": 0,
+                "faces": 8,
+                "normals": 6,
+                "bones": 0,
+                "vertices": 6,
+                "version": 3
+            },
+            "animations": [],
+            "morphTargets": [],
+            "faces": [42,0,1,2,0,0,1,2,0,1,2,42,0,2,3,0,3,2,4,0,2,3,42,0,3,4,0,5,4,6,0,3,4,42,0,4,1,0,7,6,8,0,4,1,42,2,1,5,0,2,1,0,2,1,5,42,3,2,5,0,4,2,0,3,2,5,42,4,3,5,0,6,4,0,4,3,5,42,1,4,5,0,8,6,0,1,4,5],
+            "skinIndices": []
+        },
+        "uuid": "6F819075-5DAE-3263-8E03-B58B1580326C",
+        "type": "Geometry",
+        "materials": [{
+            "shading": "phong",
+            "colorEmissive": [0,0,0],
+            "opacity": 1,
+            "colorDiffuse": [0.686275,0,0],
+            "wireframe": false,
+            "depthTest": true,
+            "doubleSided": true,
+            "transparent": false,
+            "DbgName": "Car_Paint",
+            "visible": true,
+            "blending": "NormalBlending",
+            "depthWrite": true,
+            "DbgIndex": 0,
+            "colorSpecular": [0.094902,0.09451,0.09451],
+            "specularCoef": 50,
+            "DbgColor": 15658734,
+            "colorAmbient": [0.686275,0,0]
+        }]
+    }],
+    "materials": [{
+        "uuid": "A0730D92-4E1A-3B9C-8D86-B63D2A9002FA",
+        "emissive": 0,
+        "name": "Car_Paint",
+        "blending": "NormalBlending",
+        "specular": 1579032,
+        "shininess": 50,
+        "color": 11468800,
+        "depthTest": true,
+        "depthWrite": true,
+        "type": "MeshPhongMaterial",
+        "side": 2,
+        "vertexColors": false,
+        "ambient": 11468800
+    }],
+    "metadata": {
+        "generator": "io_three",
+        "type": "Object",
+        "version": 4.4
+    },
+    "images": []
+}
